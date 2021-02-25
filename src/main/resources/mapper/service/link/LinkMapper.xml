@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuncourier.dao.service.link.LinkMapper">
+<insert id="addLinkByLink" parameterType="com.boot.yuncourier.entity.service.link.Link" >
+    insert into link values(0,#{user_id},1,#{software_id},#{token},#{ip},#{long_url},#{short_url},#{system},#{browser},#{header},#{remark},false,CURRENT_TIMESTAMP())
+</insert>
+    <select id="getLinkListByUser" parameterType="com.boot.yuncourier.entity.user.User" resultType="com.boot.yuncourier.entity.service.link.Link">
+        select link.id,software.software_name,link.ip,link.state,link.long_url,link.short_url,link.remark,link.add_time from link,software where link.user_id=#{id} and link.deleted=false
+        and link.software_id=software.id
+        <if test="content!=null and content!=''">and (software.software_name like CONCAT('%',#{content},'%') or link.token like CONCAT('%',#{content},'%') or link.ip like CONCAT('%',#{content},'%') or link.long_url like CONCAT('%',#{content},'%') or link.short_url like CONCAT('%',#{content},'%') or link.remark like CONCAT('%',#{content},'%'))</if>
+        <if test="state!=null and state!=''">and link.state=#{state}</if>
+        <if test="startTime!=null">and link.add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and link.add_time&lt;=#{endTime}</if>
+        order by link.add_time desc
+    </select>
+    <update id="deleteLinkByLink" parameterType="com.boot.yuncourier.entity.service.link.Link">
+        update link set deleted=true where user_id=#{user_id} and deleted=false
+        and id=#{id}
+        limit 1
+    </update>
+    <update id="deleteLinkByShortUrl" parameterType="com.boot.yuncourier.entity.service.link.Link">
+        update link set deleted=true where deleted=false
+        and short_url=#{short_url} and user_id=#{user_id}
+        limit 1
+    </update>
+    <update id="updateLinkInfoByLink" parameterType="com.boot.yuncourier.entity.service.link.Link" >
+        update link
+        <set>
+            <if test="state!=null and state!=''">state=#{state},</if>
+            <if test="long_url!=null and long_url!=''">long_url=#{long_url},</if>
+            <if test="short_url!=null">short_url=#{short_url},</if>
+            <if test="remark!=null">remark=#{remark},</if>
+        </set>
+        where user_id=#{user_id} and id=#{id} and deleted=false limit 1
+    </update>
+    <select id="getLinkInfoByLongUrl" parameterType="com.boot.yuncourier.entity.service.link.Link" resultType="com.boot.yuncourier.entity.service.link.Link">
+        select * from link where long_url=#{long_url} and user_id=#{user_id} and deleted=false and state=1 limit 1
+    </select>
+    <select id="getLinkInfoByShortUrl" parameterType="com.boot.yuncourier.entity.service.link.Link" resultType="com.boot.yuncourier.entity.service.link.Link">
+        select * from link where short_url=#{short_url} and deleted=false and state=1 limit 1
+    </select>
+    <select id="getLinkInfoByLink" parameterType="com.boot.yuncourier.entity.service.link.Link" resultType="com.boot.yuncourier.entity.service.link.Link">
+        select * from link where id=#{id} and user_id=#{user_id} and deleted=false limit 1
+    </select>
+    <select id="getById" parameterType="com.boot.yuncourier.entity.service.link.Link" resultType="com.boot.yuncourier.entity.service.link.Link" >
+        select * from link where id=#{id} and user_id=#{user_id} limit 1
+    </select>
+</mapper>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuncourier.dao.service.log.LogMapper">
+<insert id="insertOne" parameterType="com.boot.yuncourier.entity.service.log.Log" >
+    insert into log values(0,#{user_id},#{software_id},#{state},#{type},#{ip},#{mac},#{header},#{title},#{content},#{remark},false,CURRENT_TIMESTAMP())
+</insert>
+    <select id="getList" parameterType="com.boot.yuncourier.entity.user.User" resultType="com.boot.yuncourier.entity.service.log.Log">
+        select log.*,software.software_name as software_name
+        from log,software
+        where log.user_id=#{id}  and log.deleted=false
+        and log.software_id=software.id
+        <if test="content!=null and content!='' ">and (log.ip like CONCAT('%',#{content},'%') or log.mac like CONCAT('%',#{content},'%') or log.header like CONCAT('%',#{content},'%') or log.title like CONCAT('%',#{content},'%') or log.content like CONCAT('%',#{content},'%') or log.remark like CONCAT('%',#{content},'%') or software.software_name like CONCAT('%',#{content},'%'))</if>
+        <if test="state!=null and state!=''">and log.state=#{state}</if>
+        <if test="startTime!=null">and log.add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and log.add_time&lt;=#{endTime}</if>
+    </select>
+    <update id="deleteOne" parameterType="com.boot.yuncourier.entity.service.log.Log">
+        update log set deleted=true where user_id=#{user_id} and id=#{id} and deleted=false
+        limit 1
+    </update>
+    <select id="getInfo" parameterType="com.boot.yuncourier.entity.service.log.Log" resultType="com.boot.yuncourier.entity.service.log.Log">
+        select * from log where user_id=#{user_id} and id=#{id} and deleted=false
+        limit 1
+    </select>
+    <update id="updateOne" parameterType="com.boot.yuncourier.entity.service.log.Log">
+        update log
+        <set>
+            <if test="state!=null and state!=''">state=#{state},</if>
+            <if test="type!=null and type!=''">type=#{type},</if>
+            <if test="ip!=null and ip!=''">ip=#{ip},</if>
+            <if test="software_id!=null and software_id!=''">software_id=#{software_id},</if>
+            <if test="mac!=null and mac!=''">mac=#{mac},</if>
+            <if test="header!=null and header!=''">header=#{header},</if>
+            <if test="title!=null and title!=''">title=#{title},</if>
+            <if test="content!=null and content!=''">content=#{content},</if>
+            <if test="remark!=null">remark=#{remark},</if>
+        </set>
+         where user_id=#{user_id} and id=#{id} and deleted=false
+        limit 1
+    </update>
+    <select id="getById" parameterType="com.boot.yuncourier.entity.service.log.Log" resultType="com.boot.yuncourier.entity.service.log.Log">
+        select * from log where id=#{id}
+        limit 1
+    </select>
+</mapper>

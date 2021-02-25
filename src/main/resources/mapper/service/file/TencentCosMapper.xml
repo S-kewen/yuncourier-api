@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuncourier.dao.service.file.TencentCosMapper">
+<insert id="addTencentCosByTencentCos" parameterType="com.boot.yuncourier.entity.service.file.TencentCos" >
+    insert into tencent_cos values(0,#{user_id},1,#{software_id},#{cos_name},#{default_path},#{bucket_name},#{region},#{secret_id},#{secret_key},#{remark},false,CURRENT_TIMESTAMP())
+</insert>
+    <select id="getTencentCosListByUser" parameterType="com.boot.yuncourier.entity.user.User" resultType="com.boot.yuncourier.entity.service.file.TencentCos">
+        select tencent_cos.*,software.software_name from tencent_cos,software where tencent_cos.user_id=#{id} and tencent_cos.software_id=software.id  and tencent_cos.deleted=false
+        <if test="content!=null and content!=''">and (software.software_name like CONCAT('%',#{content},'%') or tencent_cos.remark like CONCAT('%',#{content},'%') or tencent_cos.cos_name like CONCAT('%',#{content},'%') or tencent_cos.bucket_name like CONCAT('%',#{content},'%') or tencent_cos.secret_id like CONCAT('%',#{content},'%'))</if>
+        <if test="state!=null and state!=''">and tencent_cos.state=#{state}</if>
+        <if test="startTime!=null">and tencent_cos.add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and tencent_cos.add_time&lt;=#{endTime}</if>
+    </select>
+    <update id="deleteTencentCosByTencentCos" parameterType="com.boot.yuncourier.entity.service.file.TencentCos">
+        update tencent_cos set deleted=true where user_id=#{user_id} and id=#{id} and deleted=false
+        limit 1
+    </update>
+    <select id="getTencentCosInfoByTencentCos" parameterType="com.boot.yuncourier.entity.service.file.TencentCos" resultType="com.boot.yuncourier.entity.service.file.TencentCos">
+        select * from tencent_cos where user_id=#{user_id} and id=#{id}
+        limit 1
+    </select>
+    <update id="updateTencentCosByTencentCos" parameterType="com.boot.yuncourier.entity.service.file.TencentCos">
+        update tencent_cos
+        <set>
+            <if test="software_id!=null and software_id!=''">software_id=#{software_id},</if>
+            <if test="cos_name!=null and cos_name!=''">cos_name=#{cos_name},</if>
+            <if test="default_path!=null and default_path!=''">default_path=#{default_path},</if>
+            <if test="state!=null and state!=''">state=#{state},</if>
+            <if test="bucket_name!=null and bucket_name!=''">bucket_name=#{bucket_name},</if>
+            <if test="region!=null and region!=''">region=#{region},</if>
+            <if test="secret_id!=null and secret_id!=''">secret_id=#{secret_id},</if>
+            <if test="secret_key!=null and secret_key!=''">secret_key=#{secret_key},</if>
+            <if test="remark!=null">remark=#{remark},</if>
+        </set>
+         where user_id=#{user_id} and id=#{id} and deleted=false
+        limit 1
+    </update>
+    <select id="getTencentCosCount" parameterType="com.boot.yuncourier.entity.service.file.TencentCos" resultType="int">
+        select count(*) from tencent_cos where
+        user_id=#{user_id}
+        <if test="software_id!=null and software_id!=''">and software_id=#{software_id}</if>
+        <if test="state!=null and state!=''">and state=#{state}</if>
+        <if test="cos_name!=null and cos_name!=''">and cos_name=#{cos_name}</if>
+        <if test="id!=null and id!=''">and id=#{id}</if>
+        and deleted=false limit 1
+    </select>
+    <select id="getTencentCosInfoById" parameterType="com.boot.yuncourier.entity.service.file.TencentCos" resultType="com.boot.yuncourier.entity.service.file.TencentCos">
+        select * from tencent_cos where id=#{id}
+        limit 1
+    </select>
+</mapper>

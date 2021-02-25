@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuncourier.dao.service.sms.SmsMapper">
+<insert id="addSmsBySms" parameterType="com.boot.yuncourier.entity.service.sms.Sms" >
+    insert into sms values(0,#{user_id},#{type},#{state},#{software_id},#{token},#{ip},#{subject},#{receive_phone},#{msg},#{send_time},#{cost},#{system},#{browser},#{header},#{remark},#{api_request},#{api_respond},false,CURRENT_TIMESTAMP())
+</insert>
+    <select id="getSmsListByUser" parameterType="com.boot.yuncourier.entity.user.User" resultType="com.boot.yuncourier.entity.service.sms.Sms">
+        select sms.id,software.software_name,sms.type,sms.state,sms.ip,sms.subject,sms.receive_phone,sms.msg,sms.cost,sms.add_time from sms,software where sms.user_id=#{id} and sms.deleted=false
+        and sms.software_id=software.id
+        <if test="content!=null and content!=''">and (software.software_name like CONCAT('%',#{content},'%') or sms.token like CONCAT('%',#{content},'%') or sms.ip like CONCAT('%',#{content},'%') or sms.receive_phone like CONCAT('%',#{content},'%') or sms.subject like CONCAT('%',#{content},'%') or sms.msg like CONCAT('%',#{content},'%') or sms.remark like CONCAT('%',#{content},'%'))</if>
+        <if test="state!=null and state!=''">and sms.state=#{state}</if>
+        <if test="type!=null and type!=''">and sms.type=#{type}</if>
+        <if test="startTime!=null">and sms.add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and sms.add_time&lt;=#{endTime}</if>
+        order by sms.add_time desc
+    </select>
+    <update id="deleteSmsBySms" parameterType="com.boot.yuncourier.entity.service.sms.Sms">
+        update sms set deleted=true where user_id=#{user_id} and deleted=false
+        and id=#{id}
+        limit 1
+    </update>
+    <select id="getSmsInfoBySms" parameterType="com.boot.yuncourier.entity.service.sms.Sms" resultType="com.boot.yuncourier.entity.service.sms.Sms">
+        select sms.*,software.software_name
+        from sms,software where sms.id=#{id} and sms.user_id=#{user_id}
+        and software.id=sms.software_id
+        and sms.deleted=false limit 1
+    </select>
+    <update id="updateSmsInfoBySms" parameterType="com.boot.yuncourier.entity.service.sms.Sms" >
+        update sms
+        <set>
+            <if test="state!=null and state!=''">state=#{state},</if>
+            <if test="send_time!=null">send_time=#{send_time},</if>
+        </set>
+        where user_id=#{user_id} and id=#{id} and deleted=false limit 1
+    </update>
+</mapper>

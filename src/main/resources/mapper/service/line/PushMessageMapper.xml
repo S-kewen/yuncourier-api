@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuncourier.dao.service.line.PushMessageMapper">
+<insert id="insertOne" parameterType="com.boot.yuncourier.entity.service.line.PushMessage" >
+    insert into push_message values(0,#{user_id},#{state},#{software_id},#{token},#{line_config_id},#{to},#{type},#{text},#{ip},#{system},#{brower},#{header},#{remark},#{api_request},#{api_response},false,CURRENT_TIMESTAMP())
+</insert>
+    <select id="getList" parameterType="com.boot.yuncourier.entity.user.User" resultType="com.boot.yuncourier.entity.service.line.PushMessage">
+        select push_message.id,push_message.state,push_message.software_id,push_message.token,push_message.line_config_id,push_message.to,push_message.type,push_message.text,push_message.ip,push_message.remark,push_message.add_time,software.software_name,line_config.line_config_name from push_message,line_config,software
+        where push_message.user_id=#{id}  and push_message.deleted=false
+        and push_message.software_id=software.id and push_message.line_config_id=line_config.id
+        <if test="content!=null and content!='' ">and (line_config.line_config_name like CONCAT('%',#{content},'%') or push_message.to like CONCAT('%',#{content},'%') or push_message.type like CONCAT('%',#{content},'%') or push_message.text like CONCAT('%',#{content},'%') or push_message.ip like CONCAT('%',#{content},'%') or push_message.remark like CONCAT('%',#{content},'%'))</if>
+        <if test="state!=null and state!=''">and push_message.state=#{state}</if>
+        <if test="startTime!=null">and push_message.add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and push_message.add_time&lt;=#{endTime}</if>
+        order by id desc
+    </select>
+    <update id="deleteOne" parameterType="com.boot.yuncourier.entity.service.line.PushMessage">
+        update push_message set deleted=true where user_id=#{user_id} and id=#{id} and deleted=false
+        limit 1
+    </update>
+    <select id="getInfo" parameterType="com.boot.yuncourier.entity.service.line.LineConfig" resultType="com.boot.yuncourier.entity.service.line.PushMessage">
+        select push_message.*,line_config.line_config_name from push_message,line_config where push_message.user_id=#{user_id} and push_message.id=#{id} and push_message.deleted=false
+        and push_message.line_config_id=line_config.id
+        limit 1
+    </select>
+</mapper>

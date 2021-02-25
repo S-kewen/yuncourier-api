@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuncourier.dao.service.mail.SmtpMapper">
+<insert id="addSmtpBySmtp" parameterType="com.boot.yuncourier.entity.service.mail.Smtp" >
+    insert into smtp values(0,#{user_id},#{software_id},1,#{type},#{host},#{account},#{password},#{port},#{ssl},#{priority},#{remark},false,CURRENT_TIMESTAMP())
+</insert>
+    <select id="getSmtpListByUser" parameterType="com.boot.yuncourier.entity.user.User" resultType="com.boot.yuncourier.entity.service.mail.Smtp">
+        select smtp.id,smtp.software_id,smtp.state,smtp.type,smtp.host,smtp.account,if(smtp.type=1,'',smtp.password) as password,smtp.priority,smtp.remark,smtp.add_time,'不限' as software_name from smtp where user_id=#{id} and software_id=-1  and deleted=false
+        <if test="content!=null and content!='' and content!='不限'">and (remark like CONCAT('%',#{content},'%') or host like CONCAT('%',#{content},'%') or account like CONCAT('%',#{content},'%'))</if>
+        <if test="content!=null and content!='' and content=='不限'">and (software_id=-1 or smtp.remark like CONCAT('%',#{content},'%') or host like CONCAT('%',#{content},'%') or account like CONCAT('%',#{content},'%'))</if>
+        <if test="state!=null and state!=''">and smtp.state=#{state}</if>
+        <if test="type!=null and type!=''">and smtp.type=#{type}</if>
+        <if test="startTime!=null">and smtp.add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and smtp.add_time&lt;=#{endTime}</if>
+        UNION ALL
+        select smtp.id,smtp.software_id,smtp.state,smtp.type,smtp.host,smtp.account,if(smtp.type=1,'',smtp.password) as password,smtp.priority,smtp.remark,smtp.add_time,software.software_name from smtp,software where smtp.user_id=#{id} and smtp.software_id=software.id  and smtp.deleted=false
+        <if test="content!=null and content!=''">and (software.software_name like CONCAT('%',#{content},'%') or smtp.remark like CONCAT('%',#{content},'%') or smtp.host like CONCAT('%',#{content},'%') or smtp.account like CONCAT('%',#{content},'%'))</if>
+        <if test="state!=null and state!=''">and smtp.state=#{state}</if>
+        <if test="startTime!=null">and smtp.add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and smtp.add_time&lt;=#{endTime}</if>
+    </select>
+    <select id="getSmtpListBySmtp" parameterType="com.boot.yuncourier.entity.service.mail.Smtp" resultType="com.boot.yuncourier.entity.service.mail.Smtp">
+        select * from smtp where user_id=#{user_id} and (software_id=-1 or software_id=#{software_id}) and state=1 and deleted=false order by priority desc
+    </select>
+    <update id="deleteSmtpBySmtp" parameterType="com.boot.yuncourier.entity.service.mail.Smtp">
+        update smtp set deleted=true where user_id=#{user_id} and id=#{id} and deleted=false and type!=1
+        limit 1
+    </update>
+    <select id="getSmtpInfoBySmtp" parameterType="com.boot.yuncourier.entity.service.mail.Smtp" resultType="com.boot.yuncourier.entity.service.mail.Smtp">
+        select * from smtp where user_id=#{user_id} and id=#{id} and deleted=false
+        <if test="type!=null and type!=''">and type=#{type}</if>
+        limit 1
+    </select>
+    <update id="updateSmtpBySmtp" parameterType="com.boot.yuncourier.entity.service.mail.Smtp">
+        update smtp
+        <set>
+            <if test="software_id!=null and software_id!=''">software_id=#{software_id},</if>
+            <if test="state!=null and state!=''">state=#{state},</if>
+            <if test="host!=null and host!=''">host=#{host},</if>
+            <if test="account!=null and account!=''">account=#{account},</if>
+            <if test="password!=null and password!=''">password=#{password},</if>
+            <if test="port!=null and port!=''">port=#{port},</if>
+            <if test="ssl!=null and ssl!=''">ssl=#{ssl},</if>
+            <if test="priority!=null and priority!=''">priority=#{priority},</if>
+            <if test="remark!=null">remark=#{remark},</if>
+        </set>
+         where user_id=#{user_id} and id=#{id} and deleted=false
+        <if test="type!=null and type!=''">and type=#{type}</if>
+        limit 1
+    </update>
+    <select id="getSmtpCount" parameterType="com.boot.yuncourier.entity.service.mail.Smtp" resultType="int">
+        select count(*) from smtp where
+        user_id=#{user_id}
+        <if test="software_id!=null and software_id!=''">and software_id=#{software_id}</if>
+        <if test="state!=null and state!=''">and state=#{state}</if>
+        <if test="host!=null and host!=''">and host=#{host}</if>
+        <if test="account!=null and account!=''">and account=#{account}</if>
+        <if test="id!=null and id!=''">and id=#{id}</if>
+        and deleted=false limit 1
+    </select>
+</mapper>

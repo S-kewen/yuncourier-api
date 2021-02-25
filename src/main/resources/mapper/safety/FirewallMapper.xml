@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuncourier.dao.safety.FirewallMapper">
+<insert id="addFirewallByFirewall" parameterType="com.boot.yuncourier.entity.safety.Firewall" >
+    insert into firewall values(0,#{user_id},#{software_id},1,#{type},#{object},#{ip},#{remark},false,CURRENT_TIMESTAMP())
+</insert>
+    <select id="getFirewallListByUser" parameterType="com.boot.yuncourier.entity.user.User" resultType="com.boot.yuncourier.entity.safety.Firewall">
+        select Firewall.*,'不限' as software_name from firewall where user_id=#{id} and software_id=-1  and deleted=false
+        <if test="content!=null and content!='' and content!='不限'">and (ip like CONCAT('%',#{content},'%') or remark like CONCAT('%',#{content},'%'))</if>
+        <if test="content!=null and content!='' and content=='不限'">and (software_id=-1 or ip like CONCAT('%',#{content},'%') or remark like CONCAT('%',#{content},'%'))</if>
+        <if test="state!=null and state!=''">and state=#{state}</if>
+        <if test="type!=null and type!=''">and type=#{type}</if>
+        <if test="startTime!=null">and add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and add_time&lt;=#{endTime}</if>
+        UNION ALL
+        select Firewall.*,software_name from firewall,software where firewall.user_id=#{id} and firewall.software_id=software.id  and firewall.deleted=false
+        <if test="content!=null and content!=''">and (software_name like CONCAT('%',#{content},'%') or firewall.ip like CONCAT('%',#{content},'%') or firewall.remark like CONCAT('%',#{content},'%'))</if>
+        <if test="state!=null and state!=''">and firewall.state=#{state}</if>
+        <if test="type!=null and type!=''">and firewall.type=#{type}</if>
+        <if test="startTime!=null">and firewall.add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and firewall.add_time&lt;=#{endTime}</if>
+    </select>
+    <select id="getFirewallListByFirewall" parameterType="com.boot.yuncourier.entity.safety.Firewall" resultType="com.boot.yuncourier.entity.safety.Firewall">
+        select * from firewall where user_id=#{user_id} and (software_id=#{software_id} or software_id=-1)  and deleted=false and state=1 and type=#{type} and (object=#{object} or object=1)
+    </select>
+    <update id="deleteFirewallByFirewall" parameterType="com.boot.yuncourier.entity.safety.Firewall">
+        update firewall set deleted=true where user_id=#{user_id} and id=#{id} and deleted=false
+        limit 1
+    </update>
+    <select id="getFirewallInfoByFirewall" parameterType="com.boot.yuncourier.entity.safety.Firewall" resultType="com.boot.yuncourier.entity.safety.Firewall">
+        select * from firewall where user_id=#{user_id} and id=#{id} and deleted=false limit 1
+    </select>
+    <select id="getFirewallInfoByIpAndSoftwareId" parameterType="com.boot.yuncourier.entity.safety.Firewall" resultType="com.boot.yuncourier.entity.safety.Firewall">
+        select * from firewall where user_id=#{user_id} and ip=#{ip} and software_id=#{software_id} and (object=#{object} or object=1 ) and type=#{type} and deleted=false limit 1
+    </select>
+    <update id="updateFirewallByFirewall" parameterType="com.boot.yuncourier.entity.safety.Firewall">
+        update firewall
+        <set>
+            <if test="software_id!=null and software_id!=''">software_id=#{software_id},</if>
+            <if test="state!=null and state!=''">state=#{state},</if>
+            <if test="type!=null and type!=''">type=#{type},</if>
+            <if test="object!=null and object!=''">object=#{object},</if>
+            <if test="ip!=null and ip!=''">ip=#{ip},</if>
+            <if test="remark!=null">remark=#{remark},</if>
+        </set>
+         where user_id=#{user_id} and deleted=false and id=#{id}
+        limit 1
+    </update>
+</mapper>

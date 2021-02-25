@@ -1,0 +1,141 @@
+server:
+  port: 443
+  ssl:
+    key-store: classpath:courier-api.iskwen.com.jks
+    key-store-password: qq19971102
+    key-store-type: JKS
+spring:
+  application:
+    name: springboot-test-exam1
+  datasource:
+    # 使用阿里的Druid连接池
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    # 填写你数据库的url、登录名、密码和数据库名
+    url: jdbc:mysql://localhost:3306/test?serverTimezone=Asia/Shanghai&amp;useUnicode=true&amp;characterEncoding=utf8&amp;charset=utf8
+    username: root
+    password: qq19971102
+    druid:
+      # 连接池的配置信息
+      # 初始化大小，最小，最大
+      initial-size: 5
+      min-idle: 5
+      maxActive: 20
+      # 配置获取连接等待超时的时间
+      maxWait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: SELECT 1
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      # 打开PSCache，并且指定每个连接上PSCache的大小
+      poolPreparedStatements: true
+      maxPoolPreparedStatementPerConnectionSize: 20
+      # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+      filters: stat,wall,slf4j
+      # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+      connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      # 配置DruidStatFilter
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+        exclusions: "*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico,/druid/*"
+      # 配置DruidStatViewServlet
+      stat-view-servlet:
+        url-pattern: "/drxuid/*"
+        # IP白名单(没有配置或者为空，则允许所有访问)
+        allow:
+        # IP黑名单 (存在共同时，deny优先于allow)
+        deny:
+        #  禁用HTML页面上的“Reset All”功能
+        reset-enable: false
+        # 登录名
+        login-username: admin
+        # 登录密码
+        login-password: qq19971102
+        enabled: true
+    filters: stat,wall,log4j
+    maxPoolPreparedStatementPerConnectionSize: 20
+    useGlobalDataSourceStat: true
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
+  redis:
+    database: 0
+    host: 127.0.0.1
+    jedis:
+      pool:
+        max-active: 80
+        max-idle: 50
+        max-wait: 200ms
+        min-idle: 0
+    password: qq19971102
+    port: 6379
+    ssl: false
+    timeout: 2000
+    expired: 300
+
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+  type-aliases-package: com.boot.yuncourier.entity.**
+
+jwt:
+  config:
+    salt: KqSmI7jSpKrSHTgVQ0PcJhzzwoWx2Ey8
+    ttl: 14400000
+
+config:
+  crossOrigin: /**
+  shortHost: https://x.ly2.run/
+
+http:
+  port: 8080
+
+views:
+  host: https://courier.iskwen.com/
+
+swagger:
+  basePackage: com.boot.yuncourier.api
+  title: yuncourier-Api
+  description: <a href="/swagger-ui.html" target="_blank">Api開發文檔</a>
+  version: V2.1.6
+  disable: true
+  enable: true
+
+mail:
+  #系統默認smtp配置
+  host: smtp.exmail.qq.com
+  account: root@iskwen.com
+  password: qq19971102SGH
+  easyMail:
+    cost: 2
+  htmlMail:
+    cost: 2.5
+  yuntechFlowWarn:
+    cost: 3
+
+sms:
+  toTaiwan:
+    cost: 5
+
+link:
+  addShort:
+    cost: 2
+
+line:
+  messagingApi:
+    cost: 0.5
+    url: https://nginx.iskwen.com/line/v2
+
+var:
+  privateKey: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCUrwWuvogYvMjuLJhzNKudMVXygVppCkjBK33jiqDCSlfLR1WWJBBkcJFWR6NJVGL5K0Ag77ZH8Gmtu+xKIbZiSpaE0UKo0Ys3WOppTC7oTksl0IpwCKFbB1suTkqt4eUr9aP0rhlKJsz8t/xT4dDLyjvc8FEDwV+YOlkm87YZPSYzie3ufQSxdYaNiUBwKCexd7cOglip22G6EfSHueruzus8UpZ3dL+qEDVYBi8A2osXLzMuMbUk8ZvHM0VZq1XmFg4Yp4/uOBkohO82haURlhwXwDJlC8Nj9LkG5cG+WDM7r7+Aomh9UGE/JPjD5Zlclq4/+mmmJzLOXdn2QJ5zAgMBAAECggEBAIYAK5Xu4AezdT+673a9HIIiabySuiH7A9Ec2muNkA8rI27wjoEvZZqwHTxuegpnxH+ebECC6nxxfzz2JiI1ugNiB8ASPQqbN+Yc+78Eyy3RCkc9aNdJ3+qDebkFFKcb9QgmbarikaZTy+FkDESpOx2/2S3pZIqG6BnxVFIXyaF6JwZj8Th4o+oBsh7FE25e+Y8eSh1xhJCNHhg0M/5L+2RAz+NoZWtH3gt6zJhvxfAPRE6NSdjAw8KxyaKa4kjN0WFIkh6i37qGAmU9Egp/HvbMw8/Csw0DQmUppjXs+oa5zieFKMmCVB6kFcxha+WRFkKI3dgCGTuFJenGfMhMyZkCgYEA6DIhFXY1lB9H0eYn/d9eHgmVNBwSWAZV0+MRKifiNTS/Y/meRuPtndXL0XPKdKxS138vj8aOK/SdS7gfwmELsxtb7qLu+UPG3lBC93dJHLzUeIJ3nb462O+dAwXqVwpYUzq17MZ9tJ59FQDvmSqGXwWoazVYwCgm5QFpmLiHfxcCgYEAo+0n67vNYwLD/4VbBJSDzneq2tz+Ug1eZ5oh1oeYmLMYPmxZuyGMyXCuRBK2NgDSmFYxreko3e3iMQzeK8XJhnVwT0CUUGBPpzHOA3OFfzdyAQJRJViYZEP7OL8/qUpVnEoAZ827xeaeDfQ+iOU/J87iOn2dK7lKoAIDAqor1QUCgYAJZV3pXGs2nz1sxP+BSnSoioK7JReo8Diw5lNffVWuCYBlL0i0XazT4j7pLuJWblK73a2zB7nhFXj4A29lkj/C86x4r6cz9wYpIN5U3ULcItgGOGFWxMfk121nHeops4V3eLy75BxaHr+5BdysOghN+BCkpff9bqKESdZYE7+H6QKBgBr0z8DDFEY42TQ2oL4DEh2srgrplmS10BVnUjMt/xj1MoJpXOQZ40Xo4q9NCGue/QKSAf9gPRkpmi2IuSwnjTkwLLTLoNgKzm5nEUKeB5Dg9D1YPTHP/NdYGoK9aGGVWLinrqNjQIKNpuYSiQoH8LfCHI+TwnnDMZNYYVhZ1XVlAoGAESDRw2dL1Z4zEmtv09yHj0JR7QOmMHTdFydVNL4RIIF5WMU5TsWFtQL5CN8gMuEAVG5TXxBXLh75mf7lnwAtlBtlwZxGwRx5wXVBR2BzxS5lXE9Fv+Wd6EBBMm2BRMCX8ya9nIIHOUW8PiutinhWrjm1uU1m24oj9PnWg9h15OY=
+  publicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlK8Frr6IGLzI7iyYczSrnTFV8oFaaQpIwSt944qgwkpXy0dVliQQZHCRVkejSVRi+StAIO+2R/BprbvsSiG2YkqWhNFCqNGLN1jqaUwu6E5LJdCKcAihWwdbLk5KreHlK/Wj9K4ZSibM/Lf8U+HQy8o73PBRA8FfmDpZJvO2GT0mM4nt7n0EsXWGjYlAcCgnsXe3DoJYqdthuhH0h7nq7s7rPFKWd3S/qhA1WAYvANqLFy8zLjG1JPGbxzNFWatV5hYOGKeP7jgZKITvNoWlEZYcF8AyZQvDY/S5BuXBvlgzO6+/gKJofVBhPyT4w+WZXJauP/pppicyzl3Z9kCecwIDAQAB
+
+log:
+  privateKey: MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCFhzzUnxGBuurGyC5shneDDVsdn7AgEvinhFp3iGJpdjmrd114nd/EQl9JV/0G6+mnXq7psCo/YNtvopoZS5CX3pB0GjPqTTDQ3Uctc1KtGPy9FcoGi0B1NUpFDsHybo1mgc2W4k5mNgrKLjrHbLpLHrcJ9r2dmJJJXgWRuL8kA2oXlKKXuBUWxn/rsGSAPaOhQSW1mi8sMsGP+x9l3hq8yHxJtUQwRLjl/C1sZpw7hJYqY7IG2cWp0q1WFa9Z4klvANIxQ19OCfiVJ7B1SW1N6f5u658XxR27D0yFJB7GU8qy+P38s9NZkH70JlXqGQqDMRvFmKsLcL2XxoOQwc1JAgMBAAECggEATEQKAoc4QJi6L/92RJYo/LlMKYdj2W38h/GYml1TmFjmZ4Et6g6CGF6wffu7kZB9TBNQZDkyaDCyJPkCeyAl3hhI+Yddz513HFTGqrcLqcJz2KvxT/uJPWjKmtbq/8UVDk9lVaC8lrSXRRNSj0USwoUwlohPlQvnwe/pzmlvAun86iXxs8QXkAMNw1YW2m1pBvnJ7ve4RpCX0LcsM8F8GpuxqfYwr2oLBH/GdAN704h+Xxi1CXQHeWtds8h5xoQkSd9kXG/zBTUMOE30qrUUHDqQ3F9wPDeItuy8IDkEC0UrTpeqPA4F2h/efOjaHX8K7p8kRs9xDS2mPnga57ZzgQKBgQDBiuwVKdcCZUC/ZqSglueQ9eumIpXBb0YLmfR6CTbXBJcSV97At38JZfVOQTplnTqHcX7HEx+ApP1EwkQ3jTdAB3U1SpZrfA1PuNrROQX4cAeakXGpLJdxZs0SqbPcAGbzaYseEPLSQkgKH54IthaBAqyHruSoEtcmgMiH0BgGjQKBgQCwnl2f6Q1eDywl6b7TEDUqxHuEcEN2cvKFeg3jmtKZCwd5jcUKytKGv811RiH7sxrv3f7gwsCqJSY5lczjiQ7CLqyB2M3IneZvwj4Cy0UpIrjGFNfs3bh/98HZeXfIMA8nzEgCCT4CZy3OorGdwFb0pSk+UDw/LZISODbEAHLgrQKBgF03mP+UeE9aDzZgrJgANqYWHBqXe8N/4Z/C1gJVH8muF0kpc0sk1hXjuqOnPQYmFUOZAXPGnRyr2qRcYNjUtjCrpuM0+n/obszf/txYd6yx4Kest67AoGxpFAqSG+OxeeRxCCVCCoIElIfztH0DnpEihZCQRudAs8mCq5LmQjwdAoGBAIzk+PlNWD2Vyvk/u9vyDQfeEE75o8fFMRUr5hKQ+rneI4tjfjH61PFr5wJL/WYmXjHGHcK9eicBVboQd494Uc60nydChf8pf5/eC8v8zmJfcZmLHSm3QqzLP9g2X0jSlfSAsVz2dIJEPzWdciXPP08QxpMQPM+FkgZ406+OUBZNAoGBAISfOKeE1Jcuj2BmoaV0gacGPP6Z+EEVZm01PVz7BHMaaHumeFxVDrrEvE6vn+K1PbkDgzr+CyEfiw/Qkt9IRCYGi7TtBa+U6RCcG83VlgwWfPADhdH9tl/XveTr+WjYFLPSh23c/c8pNlo9agoNXd/P8+2LKaqyxO8zXBUZ5bRx
+  publicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhYc81J8RgbrqxsgubIZ3gw1bHZ+wIBL4p4Rad4hiaXY5q3ddeJ3fxEJfSVf9Buvpp16u6bAqP2Dbb6KaGUuQl96QdBoz6k0w0N1HLXNSrRj8vRXKBotAdTVKRQ7B8m6NZoHNluJOZjYKyi46x2y6Sx63Cfa9nZiSSV4Fkbi/JANqF5Sil7gVFsZ/67BkgD2joUEltZovLDLBj/sfZd4avMh8SbVEMES45fwtbGacO4SWKmOyBtnFqdKtVhWvWeJJbwDSMUNfTgn4lSewdUltTen+buufF8Uduw9MhSQexlPKsvj9/LPTWZB+9CZV6hkKgzEbxZirC3C9l8aDkMHNSQIDAQAB
+
+rsa:
+  privateKey: MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCFhzzUnxGBuurGyC5shneDDVsdn7AgEvinhFp3iGJpdjmrd114nd/EQl9JV/0G6+mnXq7psCo/YNtvopoZS5CX3pB0GjPqTTDQ3Uctc1KtGPy9FcoGi0B1NUpFDsHybo1mgc2W4k5mNgrKLjrHbLpLHrcJ9r2dmJJJXgWRuL8kA2oXlKKXuBUWxn/rsGSAPaOhQSW1mi8sMsGP+x9l3hq8yHxJtUQwRLjl/C1sZpw7hJYqY7IG2cWp0q1WFa9Z4klvANIxQ19OCfiVJ7B1SW1N6f5u658XxR27D0yFJB7GU8qy+P38s9NZkH70JlXqGQqDMRvFmKsLcL2XxoOQwc1JAgMBAAECggEATEQKAoc4QJi6L/92RJYo/LlMKYdj2W38h/GYml1TmFjmZ4Et6g6CGF6wffu7kZB9TBNQZDkyaDCyJPkCeyAl3hhI+Yddz513HFTGqrcLqcJz2KvxT/uJPWjKmtbq/8UVDk9lVaC8lrSXRRNSj0USwoUwlohPlQvnwe/pzmlvAun86iXxs8QXkAMNw1YW2m1pBvnJ7ve4RpCX0LcsM8F8GpuxqfYwr2oLBH/GdAN704h+Xxi1CXQHeWtds8h5xoQkSd9kXG/zBTUMOE30qrUUHDqQ3F9wPDeItuy8IDkEC0UrTpeqPA4F2h/efOjaHX8K7p8kRs9xDS2mPnga57ZzgQKBgQDBiuwVKdcCZUC/ZqSglueQ9eumIpXBb0YLmfR6CTbXBJcSV97At38JZfVOQTplnTqHcX7HEx+ApP1EwkQ3jTdAB3U1SpZrfA1PuNrROQX4cAeakXGpLJdxZs0SqbPcAGbzaYseEPLSQkgKH54IthaBAqyHruSoEtcmgMiH0BgGjQKBgQCwnl2f6Q1eDywl6b7TEDUqxHuEcEN2cvKFeg3jmtKZCwd5jcUKytKGv811RiH7sxrv3f7gwsCqJSY5lczjiQ7CLqyB2M3IneZvwj4Cy0UpIrjGFNfs3bh/98HZeXfIMA8nzEgCCT4CZy3OorGdwFb0pSk+UDw/LZISODbEAHLgrQKBgF03mP+UeE9aDzZgrJgANqYWHBqXe8N/4Z/C1gJVH8muF0kpc0sk1hXjuqOnPQYmFUOZAXPGnRyr2qRcYNjUtjCrpuM0+n/obszf/txYd6yx4Kest67AoGxpFAqSG+OxeeRxCCVCCoIElIfztH0DnpEihZCQRudAs8mCq5LmQjwdAoGBAIzk+PlNWD2Vyvk/u9vyDQfeEE75o8fFMRUr5hKQ+rneI4tjfjH61PFr5wJL/WYmXjHGHcK9eicBVboQd494Uc60nydChf8pf5/eC8v8zmJfcZmLHSm3QqzLP9g2X0jSlfSAsVz2dIJEPzWdciXPP08QxpMQPM+FkgZ406+OUBZNAoGBAISfOKeE1Jcuj2BmoaV0gacGPP6Z+EEVZm01PVz7BHMaaHumeFxVDrrEvE6vn+K1PbkDgzr+CyEfiw/Qkt9IRCYGi7TtBa+U6RCcG83VlgwWfPADhdH9tl/XveTr+WjYFLPSh23c/c8pNlo9agoNXd/P8+2LKaqyxO8zXBUZ5bRx
+  publicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhYc81J8RgbrqxsgubIZ3gw1bHZ+wIBL4p4Rad4hiaXY5q3ddeJ3fxEJfSVf9Buvpp16u6bAqP2Dbb6KaGUuQl96QdBoz6k0w0N1HLXNSrRj8vRXKBotAdTVKRQ7B8m6NZoHNluJOZjYKyi46x2y6Sx63Cfa9nZiSSV4Fkbi/JANqF5Sil7gVFsZ/67BkgD2joUEltZovLDLBj/sfZd4avMh8SbVEMES45fwtbGacO4SWKmOyBtnFqdKtVhWvWeJJbwDSMUNfTgn4lSewdUltTen+buufF8Uduw9MhSQexlPKsvj9/LPTWZB+9CZV6hkKgzEbxZirC3C9l8aDkMHNSQIDAQAB

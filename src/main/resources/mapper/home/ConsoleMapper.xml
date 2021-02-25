@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuncourier.dao.home.ConsoleMapper">
+    <select id="getConsoleInfoByUser" parameterType="com.boot.yuncourier.entity.user.User"
+            resultType="com.boot.yuncourier.entity.home.Console">
+SELECT
+	(
+	SELECT
+		ifnull( count( * ), 0 )
+	FROM
+		mail
+	WHERE
+		mail.user_id = #{id}
+		AND DATE_FORMAT( mail.add_time, '%Y-%m-%d' ) = DATE_FORMAT( now( ), '%Y-%m-%d' )
+	) AS todayMailNum,
+	(
+	SELECT
+	ifnull( count( * ), 0 )
+	FROM
+	mail
+	WHERE
+	mail.user_id = #{id}
+	) AS allMailNum,
+	(
+	SELECT
+	ifnull( count( * ), 0 )
+	FROM
+	sms
+	WHERE
+		sms.user_id = #{id}
+	AND DATE_FORMAT( sms.add_time, '%Y-%m-%d' ) = DATE_FORMAT( now( ), '%Y-%m-%d' )
+	) AS todaySmsNum,
+	(
+	SELECT
+	ifnull( count( * ), 0 )
+	FROM
+	sms
+	WHERE
+	sms.user_id = #{id}
+	) AS allSmsNum,
+		(
+	SELECT
+		ifnull( count( * ), 0 )
+	FROM
+		link
+	WHERE
+		link.user_id = #{id}
+		AND DATE_FORMAT( link.add_time, '%Y-%m-%d' ) = DATE_FORMAT( now( ), '%Y-%m-%d' )
+	) AS todayLinkNum,
+	(
+	SELECT
+	ifnull( count( * ), 0 )
+	FROM
+	link
+	WHERE
+	link.user_id = #{id}
+	) AS allLinkNum,
+		(
+		SELECT
+		ifnull( count( * ), 0 )
+		FROM
+		push_message
+		WHERE
+		push_message.user_id = #{id}
+		AND DATE_FORMAT( push_message.add_time, '%Y-%m-%d' ) = DATE_FORMAT( now( ), '%Y-%m-%d' )
+		) AS todayLineNum,
+		(
+		SELECT
+		ifnull( count( * ), 0 )
+		FROM
+		push_message
+		WHERE
+		push_message.user_id = #{id}
+		) AS allLineNum,
+	(
+	SELECT
+		ifnull( count( * ), 0 )
+	FROM
+		intercept_record
+	WHERE
+		intercept_record.user_id = #{id}
+		AND DATE_FORMAT( intercept_record.add_time, '%Y-%m-%d' ) = DATE_FORMAT( now( ), '%Y-%m-%d' )
+	) AS todayInterceptNum,
+	(
+	SELECT
+	ifnull( count( * ), 0 )
+	FROM
+	intercept_record
+	WHERE
+	intercept_record.user_id = #{id}
+	) AS allInterceptNum,
+	(
+	SELECT
+		ifnull( sum( actual_amount ), 0 )
+	FROM
+	TRANSACTION
+	WHERE
+		user_id = #{id}
+		AND type = 2
+		AND state = 1
+		AND DATE_FORMAT( add_time, '%Y-%m-%d' ) = DATE_FORMAT( now( ), '%Y-%m-%d' )
+	) AS todayPay,
+	( SELECT ifnull( sum( actual_amount ), 0 ) FROM TRANSACTION WHERE user_id = #{id} AND type = 2 AND state = 1 ) AS allPay,
+	(
+		select
+		ifnull(count(*),0)
+		from mail
+		where
+		mail.user_id=#{id}
+		and mail.state!=1
+		) AS mailFailNum,
+		(
+		select
+		ifnull(count(*),0)
+		from sms
+		where
+		sms.user_id=#{id}
+		and sms.state!=1
+		) AS smsFailNum,
+		0 AS linkFailNum,
+		(
+		select
+		ifnull(count(*),0)
+		from push_message
+		where
+		push_message.user_id=#{id}
+		and push_message.state!=1
+		) AS lineFailNum,
+	cpu,
+	ram
+FROM
+	performance
+ORDER BY
+	add_time DESC
+	LIMIT 1
+    </select>
+    <select id="getApiCountByUser" parameterType="com.boot.yuncourier.entity.user.User"
+            resultType="com.boot.yuncourier.entity.home.Console">
+		SELECT
+	( SELECT ifnull( count( * ), 0 ) FROM sms WHERE user_id = #{id} ) AS allSmsNum,
+	( SELECT ifnull( count(* ), 0 ) FROM mail WHERE user_id = #{id} ) AS allMailNum,
+	( SELECT ifnull( count(* ), 0 ) FROM link WHERE user_id = #{id} ) AS allLinkNum,
+		( SELECT ifnull( count(* ), 0 ) FROM push_message WHERE user_id = #{id} ) AS allLineNum
+	</select>
+</mapper>

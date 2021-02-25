@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuncourier.dao.safety.InterceptRecordMapper">
+<insert id="addInterceptRecordByInterceptRecord" parameterType="com.boot.yuncourier.entity.safety.InterceptRecord" >
+    insert into intercept_record values(0,#{user_id},#{software_id},#{real_ip},#{firewall_ip},#{object},#{system},#{browser},#{header},false,CURRENT_TIMESTAMP())
+</insert>
+    <select id="getInterceptRecordListByUser" parameterType="com.boot.yuncourier.entity.user.User" resultType="com.boot.yuncourier.entity.safety.InterceptRecord">
+        select intercept_record.id,intercept_record.software_id,intercept_record.real_ip,intercept_record.firewall_ip,intercept_record.object,intercept_record.system,intercept_record.browser,intercept_record.add_time,software.software_name from intercept_record,software where software.user_id=#{id} and intercept_record.user_id=#{id} and intercept_record.software_id=software.id  and intercept_record.deleted=false
+        <if test="content!=null and content!=''">and (software.software_name like CONCAT('%',#{content},'%') or intercept_record.real_ip like CONCAT('%',#{content},'%') or intercept_record.firewall_ip like CONCAT('%',#{content},'%') or intercept_record.system like CONCAT('%',#{content},'%') or intercept_record.browser like CONCAT('%',#{content},'%'))</if>
+        <if test="type!=null and type!=''">and intercept_record.object=#{type}</if>
+        <if test="startTime!=null">and intercept_record.add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and intercept_record.add_time&lt;=#{endTime}</if>
+    </select>
+    <update id="deleteInterceptRecordByInterceptRecord" parameterType="com.boot.yuncourier.entity.safety.InterceptRecord">
+        update intercept_record,software set intercept_record.deleted=true where software.user_id=#{user_id} and intercept_record.software_id=software.id and intercept_record.deleted=false and intercept_record.id=#{id}
+    </update>
+    <select id="getInterceptRecordInfoByInterceptRecord" parameterType="com.boot.yuncourier.entity.safety.InterceptRecord" resultType="com.boot.yuncourier.entity.safety.InterceptRecord">
+        select * from intercept_record,software where software.user_id=#{user_id} and software.id=intercept_record.software_id and intercept_record.id=#{id} and intercept_record.deleted=false limit 1
+    </select>
+</mapper>

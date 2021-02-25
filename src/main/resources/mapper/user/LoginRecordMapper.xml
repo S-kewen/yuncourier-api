@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuncourier.dao.user.LoginRecordMapper">
+<insert id="addLoginRecordByLoginRecord" parameterType="com.boot.yuncourier.entity.user.LoginRecord" >
+    insert into login_record values(0,#{user_id},#{state},#{type},#{ip},#{position},#{system},#{browser},#{header},false,CURRENT_TIMESTAMP())
+</insert>
+    <select id="getLoginRecordInfoByIp" parameterType="com.boot.yuncourier.entity.user.LoginRecord" resultType="com.boot.yuncourier.entity.user.LoginRecord">
+        select * from login_record where ip=#{ip} ORDER BY add_time DESC limit 1
+    </select>
+    <select id="getLoginRecordListByUser" parameterType="com.boot.yuncourier.entity.user.User" resultType="com.boot.yuncourier.entity.user.LoginRecord">
+    select id,state,type,ip,position,system,browser,add_time from login_record where user_id=#{id} and deleted=false
+    <if test="content!=null and content!=''">and (ip like CONCAT('%',#{content},'%') or position like CONCAT('%',#{content},'%') or system like CONCAT('%',#{content},'%') or browser like CONCAT('%',#{content},'%'))</if>
+    <if test="state!=null and state!=''">and state=#{state}</if>
+    <if test="startTime!=null">and add_time&gt;=#{startTime}</if>
+    <if test="endTime!=null">and add_time&lt;=#{endTime}</if>
+        order by add_time desc
+</select>
+    <update id="deleteLoginRecordByLoginRecord" parameterType="com.boot.yuncourier.entity.user.LoginRecord">
+    update login_record set deleted=true where user_id=#{user_id} and deleted=false
+    and id=#{id}
+        limit 1
+    </update>
+    <select id="getUserIndexLoginRecordListByUser" parameterType="com.boot.yuncourier.entity.user.User" resultType="com.boot.yuncourier.entity.user.LoginRecord">
+        select id,state,type,ip,position,add_time from login_record where user_id=#{id} and deleted=false order by add_time desc
+    </select>
+</mapper>

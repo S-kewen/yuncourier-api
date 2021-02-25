@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuncourier.dao.service.var.VarRecordMapper">
+<insert id="insertOne" parameterType="com.boot.yuncourier.entity.service.var.VarRecord" >
+    insert into var_record values(0,#{user_id},#{software_id},#{var_id},#{state},#{type},#{ip},#{request},#{header},#{remark},false,CURRENT_TIMESTAMP())
+</insert>
+    <select id="getList" parameterType="com.boot.yuncourier.entity.user.User" resultType="com.boot.yuncourier.entity.service.var.VarRecord">
+        select var_record.*,var.title,software.software_name as software_name
+        from var_record,software,var
+        where var_record.user_id=#{id}  and var_record.deleted=false
+        and var_record.software_id=software.id
+        and var.id=var_record.var_id
+        <if test="content!=null and content!='' ">and (var_record.ip like CONCAT('%',#{content},'%') or var_record.request like CONCAT('%',#{content},'%') or var_record.header like CONCAT('%',#{content},'%') or var_record.remark like CONCAT('%',#{content},'%') or var.title like CONCAT('%',#{content},'%') or var.content like CONCAT('%',#{content},'%') or software.software_name like CONCAT('%',#{content},'%'))</if>
+        <if test="state!=null and state!=''">and var_record.state=#{state}</if>
+        <if test="startTime!=null">and var_record.add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and var_record.add_time&lt;=#{endTime}</if>
+        order by add_time desc
+    </select>
+    <update id="deleteOne" parameterType="com.boot.yuncourier.entity.service.var.VarRecord">
+        update var_record set deleted=true where user_id=#{user_id} and id=#{id} and deleted=false
+        limit 1
+    </update>
+    <select id="getInfo" parameterType="com.boot.yuncourier.entity.service.var.VarRecord" resultType="com.boot.yuncourier.entity.service.var.VarRecord">
+        select * from var_record where user_id=#{user_id} and id=#{id} and deleted=false
+        limit 1
+    </select>
+</mapper>

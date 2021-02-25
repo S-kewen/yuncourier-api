@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuncourier.dao.user.TransactionMapper">
+<insert id="addTransactionByTransaction" parameterType="com.boot.yuncourier.entity.user.Transaction" >
+    insert into transaction values(0,#{user_id},#{state},#{type},#{title},#{amount},#{commission},#{actual_amount},0,false,CURRENT_TIMESTAMP())
+</insert>
+    <select id="geyPayListByUser" parameterType="com.boot.yuncourier.entity.user.User" resultType="com.boot.yuncourier.entity.user.Transaction">
+        (
+	SELECT
+		ifnull( sum( actual_amount ), 0 ) AS actual_amount
+	FROM
+	TRANSACTION
+	WHERE
+		user_id = #{id}
+		AND type = 2
+		AND state = 1
+		AND DATE_FORMAT( add_time, '%Y-%m-%d' ) = DATE_FORMAT( #{startTime}, '%Y-%m-%d' )
+	)
+	UNION ALL
+	(
+	SELECT
+		ifnull( sum( actual_amount ), 0 ) AS actual_amount
+	FROM
+	TRANSACTION
+	WHERE
+		user_id = #{id}
+		AND type = 2
+		AND state = 1
+		AND DATE_FORMAT( add_time, '%Y-%m-%d' ) = DATE_FORMAT( DATE_SUB(#{startTime},interval 1 DAY), '%Y-%m-%d' )
+	)
+	UNION ALL
+	(
+	SELECT
+		ifnull( sum( actual_amount ), 0 ) AS actual_amount
+	FROM
+	TRANSACTION
+	WHERE
+		user_id = #{id}
+		AND type = 2
+		AND state = 1
+		AND DATE_FORMAT( add_time, '%Y-%m-%d' ) = DATE_FORMAT( DATE_SUB(#{startTime},interval 2 DAY), '%Y-%m-%d' )
+	)
+	UNION ALL
+	(
+	SELECT
+		ifnull( sum( actual_amount ), 0 ) AS actual_amount
+	FROM
+	TRANSACTION
+	WHERE
+		user_id = #{id}
+		AND type = 2
+		AND state = 1
+		AND DATE_FORMAT( add_time, '%Y-%m-%d' ) = DATE_FORMAT( DATE_SUB(#{startTime},interval 3 DAY), '%Y-%m-%d' )
+	)
+	UNION ALL
+	(
+	SELECT
+		ifnull( sum( actual_amount ), 0 ) AS actual_amount
+	FROM
+	TRANSACTION
+	WHERE
+		user_id = #{id}
+		AND type = 2
+		AND state = 1
+		AND DATE_FORMAT( add_time, '%Y-%m-%d' ) = DATE_FORMAT( DATE_SUB(#{startTime},interval 4 DAY), '%Y-%m-%d' )
+	)
+	UNION ALL
+	(
+	SELECT
+		ifnull( sum( actual_amount ), 0 ) AS actual_amount
+	FROM
+	TRANSACTION
+	WHERE
+		user_id = #{id}
+		AND type = 2
+		AND state = 1
+		AND DATE_FORMAT( add_time, '%Y-%m-%d' ) = DATE_FORMAT( DATE_SUB(#{startTime},interval 5 DAY), '%Y-%m-%d' )
+	)
+	UNION ALL
+	(
+	SELECT
+		ifnull( sum( actual_amount ), 0 ) AS actual_amount
+	FROM
+	TRANSACTION
+	WHERE
+	user_id = #{id}
+		AND type = 2
+		AND state = 1
+		AND DATE_FORMAT( add_time, '%Y-%m-%d' ) = DATE_FORMAT( DATE_SUB(#{startTime},interval 6 DAY), '%Y-%m-%d' )
+	)
+
+    </select>
+	<select id="getTransactionListByUser" parameterType="com.boot.yuncourier.entity.user.User" resultType="com.boot.yuncourier.entity.user.Transaction">
+		select id,state,type,title,amount,commission,actual_amount,balance,add_time from transaction where user_id=#{id} and deleted=false
+		<if test="content!=null and content!=''">and title like CONCAT('%',#{content},'%')</if>
+		<if test="state!=null and state!=''">and state=#{state}</if>
+		<if test="startTime!=null">and add_time&gt;=#{startTime}</if>
+		<if test="endTime!=null">and add_time&lt;=#{endTime}</if>
+		order by add_time desc
+	</select>
+	<update id="deleteTransactionByTransaction" parameterType="com.boot.yuncourier.entity.user.Transaction">
+		update transaction set deleted=true where user_id=#{user_id} and deleted=false
+		and id=#{id} and state!=3
+		limit 1
+	</update>
+</mapper>

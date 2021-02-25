@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuncourier.dao.service.file.CosFileMapper">
+<insert id="addCosFileByCosFile" parameterType="com.boot.yuncourier.entity.service.file.CosFile" >
+    insert into cos_file values(0,#{user_id},#{cos_id},#{file_name},substring(MD5(RAND()),1,4),#{md5},#{size},#{bucket},#{file_path},#{key},#{region},#{request_id},1,#{file_type},2,1,now(),MD5(RAND()),#{remark},#{download_url},#{cos_url},#{short_url},false,CURRENT_TIMESTAMP())
+</insert>
+    <select id="getCosFileListByUser" parameterType="com.boot.yuncourier.entity.user.User" resultType="com.boot.yuncourier.entity.service.file.CosFile">
+        select cos_file.*,tencent_cos.cos_name as cos_name,tencent_cos.secret_id as secret_id,tencent_cos.secret_key as secret_key from cos_file,tencent_cos
+        where cos_file.user_id=#{id} and cos_file.deleted=false
+        and cos_file.cos_id=tencent_cos.id and tencent_cos.user_id=cos_file.user_id
+        <if test="content!=null and content!=''">and ( cos_file.file_name like CONCAT('%',#{content},'%') or cos_file.md5 like CONCAT('%',#{content},'%') or cos_file.bucket like CONCAT('%',#{content},'%') or cos_file.file_path like CONCAT('%',#{content},'%') or cos_file.key like CONCAT('%',#{content},'%') or cos_file.region like CONCAT('%',#{content},'%')  or cos_file.request_id like CONCAT('%',#{content},'%') or cos_file.sign like CONCAT('%',#{content},'%') or cos_file.download_url like CONCAT('%',#{content},'%') or cos_file.cos_url like CONCAT('%',#{content},'%') or cos_file.short_url like CONCAT('%',#{content},'%') or cos_file.remark like CONCAT('%',#{content},'%') or cos_file.password like CONCAT('%',#{content},'%') or tencent_cos.cos_name like CONCAT('%',#{content},'%'))</if>
+        <if test="state!=null and state!=''">and cos_file.state=#{state}</if>
+        <if test="type!=null and type!=''">and cos_file.file_type=#{type}</if>
+        <if test="startTime!=null">and cos_file.add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and cos_file.add_time&lt;=#{endTime}</if>
+        order by cos_file.add_time desc
+    </select>
+    <update id="deleteCosFileByCosFile" parameterType="com.boot.yuncourier.entity.service.file.CosFile">
+        update cos_file set deleted=true where user_id=#{user_id} and id=#{id} and deleted=false
+        limit 1
+    </update>
+    <select id="getCosFileInfoByCosFile" parameterType="com.boot.yuncourier.entity.service.file.CosFile" resultType="com.boot.yuncourier.entity.service.file.CosFile">
+        select * from cos_file where user_id=#{user_id} and id=#{id} and deleted=false
+        limit 1
+    </select>
+    <update id="updateCosFileByCosFile" parameterType="com.boot.yuncourier.entity.service.file.CosFile">
+        update cos_file
+        <set>
+            <if test="file_name!=null and file_name!=''">file_name=#{file_name},</if>
+            <if test="password!=null and password!=''">password=#{password},</if>
+            <if test="md5!=null and md5!=''">md5=#{md5},</if>
+            <if test="size!=null and size!=''">size=#{size},</if>
+            <if test="bucket!=null and bucket!=''">bucket=#{bucket},</if>
+            <if test="file_path!=null and file_path!=''">file_path=#{file_path},</if>
+            <if test="key!=null and key!=''">cos_file.key=#{key},</if>
+            <if test="region!=null and region!=''">region=#{region},</if>
+            <if test="request_id!=null and request_id!=''">request_id=#{request_id},</if>
+            <if test="state!=null and state!=''">state=#{state},</if>
+            <if test="file_type!=null and file_type!=''">file_type=#{file_type},</if>
+            <if test="open_type!=null and open_type!=''">open_type=#{open_type},</if>
+            <if test="deposit_type!=null and deposit_type!=''">deposit_type=#{deposit_type},</if>
+            <if test="expire_time!=null">expire_time=#{expire_time},</if>
+            <if test="remark!=null ">remark=#{remark},</if>
+            <if test="download_url!=null and download_url!=''">download_url=#{download_url},</if>
+            <if test="cos_url!=null and cos_url!=''">cos_url=#{cos_url},</if>
+            <if test="short_url!=null and short_url!=''">short_url=#{short_url},</if>
+            <if test="add_time!=null">add_time=CURRENT_TIMESTAMP(),</if>
+        </set>
+         where user_id=#{user_id} and id=#{id} and deleted=false
+        limit 1
+    </update>
+    <select id="getCosFileInfoByKey" parameterType="com.boot.yuncourier.entity.service.file.CosFile" resultType="com.boot.yuncourier.entity.service.file.CosFile">
+        select * from cos_file where user_id=#{user_id}
+        <if test="file_name!=null and file_name!=''">and file_name=#{file_name}</if>
+        <if test="md5!=null and md5!=''">and md5=#{md5}</if>
+        <if test="bucket!=null and bucket!=''">and bucket=#{bucket}</if>
+        <if test="file_path!=null">and file_path=#{file_path}</if>
+        <if test="key!=null and key!=''">and cos_file.key=#{key}</if>
+        <if test="region!=null and region!=''">and region=#{region}</if>
+        and deleted=false
+        limit 1
+    </select>
+    <select id="getCosFileInfoBySign" parameterType="com.boot.yuncourier.entity.service.file.CosFile" resultType="com.boot.yuncourier.entity.service.file.CosFile">
+        select * from cos_file where id=#{id} and sign=#{sign}
+        and deleted=false
+        limit 1
+    </select>
+    <update id="clearCosFileByCosFile" parameterType="com.boot.yuncourier.entity.service.file.CosFile">
+        update cos_file set deleted=true where user_id=#{user_id} and cos_id=#{cos_id} and deleted=false
+    </update>
+    <select id="getCosFileCountByCosFile" parameterType="com.boot.yuncourier.entity.service.file.CosFile" resultType="int">
+        select count(*) from cos_file where user_id=#{user_id}
+        <if test="cos_id!=null and cos_id!=''">and cos_id=#{cos_id}</if>
+        and deleted=false
+    </select>
+</mapper>

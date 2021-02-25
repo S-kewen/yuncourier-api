@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuncourier.dao.service.line.LineConfigMapper">
+<insert id="insertOne" parameterType="com.boot.yuncourier.entity.service.line.LineConfig" >
+    insert into line_config values(0,#{user_id},1,#{type},#{software_id},#{line_config_name},#{channel_id},#{channel_secret},#{token},#{remark},false,CURRENT_TIMESTAMP())
+</insert>
+    <select id="getList" parameterType="com.boot.yuncourier.entity.user.User" resultType="com.boot.yuncourier.entity.service.line.LineConfig">
+        select line_config.id,line_config.state,line_config.type,line_config.software_id,line_config.line_config_name,line_config.channel_id,line_config.channel_secret,line_config.token,line_config.remark,line_config.add_time,software.software_name as software_name from line_config,software where line_config.user_id=#{id}  and line_config.deleted=false
+        and line_config.software_id=software.id
+        <if test="content!=null and content!='' ">and (line_config.line_config_name like CONCAT('%',#{content},'%') or line_config.channel_id like CONCAT('%',#{content},'%') or line_config.remark like CONCAT('%',#{content},'%'))</if>
+        <if test="state!=null and state!=''">and line_config.state=#{state}</if>
+        <if test="startTime!=null">and line_config.add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and line_config.add_time&lt;=#{endTime}</if>
+    </select>
+    <update id="deleteOne" parameterType="com.boot.yuncourier.entity.service.line.LineConfig">
+        update line_config set deleted=true where user_id=#{user_id} and id=#{id} and deleted=false
+        limit 1
+    </update>
+    <select id="getInfo" parameterType="com.boot.yuncourier.entity.service.line.LineConfig" resultType="com.boot.yuncourier.entity.service.line.LineConfig">
+        select * from line_config where user_id=#{user_id} and id=#{id} and deleted=false
+        limit 1
+    </select>
+    <update id="updateOne" parameterType="com.boot.yuncourier.entity.service.line.LineConfig">
+        update line_config
+        <set>
+            <if test="state!=null and state!=''">state=#{state},</if>
+            <if test="type!=null and type!=''">type=#{type},</if>
+            <if test="software_id!=null and software_id!=''">software_id=#{software_id},</if>
+            <if test="line_config_name!=null and line_config_name!=''">line_config_name=#{line_config_name},</if>
+            <if test="channel_id!=null and channel_id!=''">channel_id=#{channel_id},</if>
+            <if test="channel_secret!=null and channel_secret!=''">channel_secret=#{channel_secret},</if>
+            <if test="token!=null and token!=''">token=#{token},</if>
+            <if test="remark!=null">remark=#{remark},</if>
+        </set>
+         where user_id=#{user_id} and id=#{id} and deleted=false
+        limit 1
+    </update>
+    <select id="getCount" parameterType="com.boot.yuncourier.entity.service.line.LineConfig" resultType="int">
+        select count(*) from line_config where
+        user_id=#{user_id}
+        <if test="software_id!=null and software_id!=''">and software_id=#{software_id}</if>
+        <if test="state!=null and state!=''">and state=#{state}</if>
+        <if test="line_config_name!=null and line_config_name!=''">and line_config_name=#{line_config_name}</if>
+       <if test="id!=null and id!=''">and id!=#{id}</if><!-- 排除本項-->
+        and deleted=false limit 1
+    </select>
+    <select id="getById" parameterType="com.boot.yuncourier.entity.service.line.LineConfig" resultType="com.boot.yuncourier.entity.service.line.LineConfig">
+        select * from line_config where id=#{id}
+        limit 1
+    </select>
+</mapper>

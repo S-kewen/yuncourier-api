@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuncourier.dao.app.SoftwareMapper">
+<select id="getSoftwareInfoBySoftware" parameterType="com.boot.yuncourier.entity.app.Software" resultType="com.boot.yuncourier.entity.app.Software">
+   select * from software where id=#{id} and user_id=#{user_id} and software.deleted=false limit 1
+ </select>
+    <select id="checkBySoftware" parameterType="com.boot.yuncourier.entity.app.Software" resultType="com.boot.yuncourier.entity.app.Software">
+        select software.* from user,software
+        where software.id=#{id}
+        and software.token=#{token}
+        and user.id=software.user_id
+        and user.state=1
+        and software.state=1
+        and software.deleted=false
+        limit 1
+    </select>
+    <insert id="addSoftware" parameterType="com.boot.yuncourier.entity.app.Software">
+        insert into software values(0,#{user_id},#{software_name},1,substring(MD5(RAND()),1,32),#{remark},false,CURRENT_TIMESTAMP())
+    </insert>
+    <select id="getSoftwareListByUser" parameterType="com.boot.yuncourier.entity.user.User" resultType="com.boot.yuncourier.entity.app.Software">
+        select id,software_name,state,token,remark,add_time from software where user_id=#{id} and deleted=false
+        <if test="content!=null and content!=''">and (software_name like CONCAT('%',#{content},'%') or token like CONCAT('%',#{content},'%') or remark like CONCAT('%',#{content},'%'))</if>
+        <if test="state!=null and state!=''">and state=#{state}</if>
+        <if test="startTime!=null">and add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and add_time&lt;=#{endTime}</if>
+    </select>
+    <update id="deleteSoftwareBySoftware" parameterType="com.boot.yuncourier.entity.app.Software">
+        update software set deleted=true where user_id=#{user_id} and deleted=false
+        and id=#{id}
+        limit 1
+    </update>
+    <select id="checkSoftwareNameBySoftware" parameterType="com.boot.yuncourier.entity.app.Software" resultType="int">
+        select count(*) from software where software_name=#{software_name} and user_id=#{user_id}
+        and deleted=false
+        <if test="id!=null and id!=''">and id!=#{id}</if>
+         limit 1
+    </select>
+    <update id="updateSoftwareInfoBySoftware" parameterType="com.boot.yuncourier.entity.app.Software" >
+        update software
+        <set>
+            <if test="state!=null and state!=''">state=#{state},</if>
+            <if test="software_name!=null and software_name!=''">software_name=#{software_name},</if>
+            <if test="token!=null and token!=''">token=#{token},</if>
+            <if test="remark!=null ">remark=#{remark},</if>
+        </set>
+        where user_id=#{user_id} and id=#{id} and deleted=false limit 1
+    </update>
+</mapper>

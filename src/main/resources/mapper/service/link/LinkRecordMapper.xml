@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuncourier.dao.service.link.LinkRecordMapper">
+<insert id="addLinkRecordByLinkRecord" parameterType="com.boot.yuncourier.entity.service.link.LinkRecord" >
+    insert into link_record values(0,#{link_id},#{original_url},#{long_url},#{short_url},#{state},#{ip},#{position},#{longitude},#{latitude},#{system},#{browser},#{header},false,CURRENT_TIMESTAMP())
+</insert>
+    <select id="getLinkRecordListByUser" parameterType="com.boot.yuncourier.entity.user.User" resultType="com.boot.yuncourier.entity.service.link.LinkRecord">
+        select link_record.id,link_record.link_id,link_record.original_url,link_record.long_url,link_record.short_url,link_record.state,link_record.ip,link_record.position,link_record.latitude,link_record.longitude,link_record.system,link_record.browser,link_record.add_time,software.software_name from link_record,software,link where link.user_id=#{id} and link.id=link_record.link_id and link_record.deleted=false
+        and link.software_id=software.id
+        <if test="content!=null and content!=''">and (software.software_name like CONCAT('%',#{content},'%') or link.token like CONCAT('%',#{content},'%') or link_record.ip like CONCAT('%',#{content},'%') or link_record.original_url like CONCAT('%',#{content},'%') or link_record.long_url like CONCAT('%',#{content},'%') or link_record.short_url like CONCAT('%',#{content},'%')  or link_record.system like CONCAT('%',#{content},'%') or link_record.browser like CONCAT('%',#{content},'%'))</if>
+        <if test="state!=null and state!=''">and link_record.state=#{state}</if>
+        <if test="startTime!=null">and link_record.add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and link_record.add_time&lt;=#{endTime}</if>
+        order by link_record.add_time desc
+    </select>
+    <update id="deleteLinkRecordByLinkRecord" parameterType="com.boot.yuncourier.entity.service.link.LinkRecord">
+        update link_record set deleted=true where id=#{id} and deleted=false limit 1
+    </update>
+    <select id="getLinkRecordInfoByLinkRecord" parameterType="com.boot.yuncourier.entity.service.link.LinkRecord" resultType="com.boot.yuncourier.entity.service.link.LinkRecord">
+        select * from link_record,link where link_record.link_id=#{link_id} and link.id=link_record.link_id and link.user_id=#{state} and link_record.deleted=false limit 1
+    </select>
+    <select id="getLinkRecordInfoByIp" parameterType="com.boot.yuncourier.entity.service.link.LinkRecord" resultType="com.boot.yuncourier.entity.service.link.LinkRecord">
+        select * from link_record where ip=#{ip} ORDER BY add_time DESC limit 1
+    </select>
+    <select id="getById" parameterType="com.boot.yuncourier.entity.service.link.LinkRecord" resultType="com.boot.yuncourier.entity.service.link.LinkRecord" >
+        select * from link_record where id=#{id} and deleted=false limit 1
+    </select>
+</mapper>

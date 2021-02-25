@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuncourier.dao.user.NewsMapper">
+<insert id="addNewsByNews" parameterType="com.boot.yuncourier.entity.user.News" >
+    insert into news values(0,#{user_id},1,#{sender},#{title},#{msg},false,CURRENT_TIMESTAMP())
+</insert>
+    <select id="getCountByNews" parameterType="com.boot.yuncourier.entity.user.News" resultType="int">
+        select ifnull(count(*),0) from news where deleted=false
+            <if test="user_id!=null and user_id!=''">
+                and user_id=#{user_id}
+            </if>
+           <if test="state!=null and state!=''">
+               and state=#{state}
+           </if>
+    </select>
+    <select id="getNewsListByNews" parameterType="com.boot.yuncourier.entity.user.User" resultType="com.boot.yuncourier.entity.user.News">
+        select id,state,sender,title,msg,add_time from news where user_id=#{id} and deleted=false
+        <if test="content!=null and content!=''">and (sender like CONCAT('%',#{content},'%') or title like CONCAT('%',#{content},'%') or msg like CONCAT('%',#{content},'%'))</if>
+        <if test="state!=null and state!=''">and state=#{state}</if>
+        <if test="startTime!=null">and add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and add_time&lt;=#{endTime}</if>
+        order by add_time desc
+    </select>
+    <update id="deleteNewsByNews" parameterType="com.boot.yuncourier.entity.user.News">
+        update news set deleted=true where user_id=#{user_id} and deleted=false
+        and id=#{id}
+        limit 1
+    </update>
+    <update id="updateNewsByNews" parameterType="com.boot.yuncourier.entity.user.News" >
+        update news
+        <set>
+        <if test="state!=null and state!=''">state=#{state},</if>
+        </set>
+        where user_id=#{user_id} and deleted=false and id=#{id} limit 1
+    </update>
+    <update id="allReadByNews" parameterType="com.boot.yuncourier.entity.user.User">
+        update news set state=2 where user_id=#{id} and deleted=false and state=1
+    </update>
+    <select id="getUserIndexNewsListByUser" parameterType="com.boot.yuncourier.entity.user.User" resultType="com.boot.yuncourier.entity.user.News">
+        select id,state,sender,title,msg,add_time from news where user_id=#{id} and deleted=false order by add_time desc
+    </select>
+</mapper>

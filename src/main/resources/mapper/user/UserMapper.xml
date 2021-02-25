@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuncourier.dao.user.UserMapper">
+
+<!--    <sql id="Base_Column_List" >實現字段管理-->
+<!--    user_id,username,password-->
+<!--  </sql>-->
+<!--    <include refid="Base_Column_List" />-->
+
+    <select id="getById" parameterType="com.boot.yuncourier.entity.user.User" resultType="com.boot.yuncourier.entity.user.User">
+   select * from user where id=#{id} limit 1
+    </select>
+    <select id="userLogin" parameterType="com.boot.yuncourier.entity.user.User" resultType="com.boot.yuncourier.entity.user.User">
+   select * from user where username=#{username} and password=HEX(AES_ENCRYPT(MD5(#{password}),'sV@PhUu#C!ANO3Srn2l!LNY*9yKcsRAU')) limit 1
+    </select>
+    <select id="getByUsername" parameterType="com.boot.yuncourier.entity.user.User" resultType="com.boot.yuncourier.entity.user.User">
+   select * from user where username=#{username} limit 1
+    </select>
+    <update id="updateUserInfoByUser" parameterType="com.boot.yuncourier.entity.user.User" >
+    update user
+    <set>
+        <if test="phone!=null ">phone=#{phone},</if>
+        <if test="email!=null and email!=''">email=#{email},</if>
+        <if test="password!=null and password!=''">password=HEX(AES_ENCRYPT(MD5(#{password}),'sV@PhUu#C!ANO3Srn2l!LNY*9yKcsRAU')),</if>
+    </set>
+    where id=#{id} limit 1
+    </update>
+    <update id="updatePasswordByUser" parameterType="com.boot.yuncourier.entity.user.User" >
+        update user
+        <set>
+            <if test="password!=null and password!=''">password=HEX(AES_ENCRYPT(MD5(#{password}),'sV@PhUu#C!ANO3Srn2l!LNY*9yKcsRAU')),</if>
+        </set>
+        where id=#{id} limit 1
+    </update>
+    <select id="getUserIndexByUser" parameterType="com.boot.yuncourier.entity.user.User" resultType="com.boot.yuncourier.entity.user.UserIndex">
+        SELECT
+        (
+        SELECT
+        ifnull( count( * ), 0 )
+        FROM
+        mail
+        WHERE
+        mail.user_id = #{id}
+        AND DATE_FORMAT( mail.add_time, '%Y-%m-%d' ) = DATE_FORMAT( now( ), '%Y-%m-%d' )
+        ) AS todayMailNum,
+        (
+        SELECT
+        ifnull( count( * ), 0 )
+        FROM
+        mail
+        WHERE
+        mail.user_id = #{id}
+        ) AS allMailNum,
+        (
+        SELECT
+        ifnull( count( * ), 0 )
+        FROM
+        sms
+        WHERE
+        sms.user_id = #{id}
+        AND DATE_FORMAT( sms.add_time, '%Y-%m-%d' ) = DATE_FORMAT( now( ), '%Y-%m-%d' )
+        ) AS todaySmsNum,
+        (
+        SELECT
+        ifnull( count( * ), 0 )
+        FROM
+        sms
+        WHERE
+        sms.user_id = #{id}
+        ) AS allSmsNum,
+        (
+        SELECT
+        ifnull( count( * ), 0 )
+        FROM
+        link
+        WHERE
+        link.user_id = #{id}
+        AND DATE_FORMAT( link.add_time, '%Y-%m-%d' ) = DATE_FORMAT( now( ), '%Y-%m-%d' )
+        ) AS todayLinkNum,
+        (
+        SELECT
+        ifnull( count( * ), 0 )
+        FROM
+        link
+        WHERE
+        link.user_id = #{id}
+        ) AS allLinkNum,
+        (
+        select
+        ifnull(count(*),0)
+        from mail
+        where
+        mail.user_id=#{id}
+        and mail.state!=1
+        ) AS mailFailNum,
+        (
+        select
+        ifnull(count(*),0)
+        from sms
+        where
+        sms.user_id=#{id}
+        and sms.state!=1
+        ) AS smsFailNum,
+        0 AS linkFailNum,
+        (
+        SELECT
+        ifnull( sum( actual_amount ), 0 )
+        FROM
+        TRANSACTION
+        WHERE
+        user_id = #{id}
+        AND type = 2
+        AND state = 1
+        AND DATE_FORMAT( add_time, '%Y-%m-%d' ) = DATE_FORMAT( now( ), '%Y-%m-%d' )
+        ) AS todayPay,
+        (
+        SELECT
+        ifnull( sum( actual_amount ), 0 )
+        FROM
+        TRANSACTION
+        WHERE
+        user_id = #{id}
+        AND type = 2
+        AND state = 1
+        ) AS allPay,
+        user.*
+        FROM
+        user
+        where
+        id=#{id}
+        LIMIT 1
+    </select>
+    <update id="resetPasswordByUser" parameterType="com.boot.yuncourier.entity.user.User" >
+        update user set password=HEX(AES_ENCRYPT(MD5(#{password}),'sV@PhUu#C!ANO3Srn2l!LNY*9yKcsRAU')),state=1
+        where username=#{username} and state=3 limit 1
+    </update>
+</mapper>

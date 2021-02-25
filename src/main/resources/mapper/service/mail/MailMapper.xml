@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuncourier.dao.service.mail.MailMapper">
+<insert id="addMailByMail" parameterType="com.boot.yuncourier.entity.service.mail.Mail" >
+    insert into mail values(0,#{user_id},#{state},#{software_id},#{token},#{ip},#{receive_mail},#{title},#{msg},#{content_type},#{sender},#{send_time},#{system},#{browser},#{header},#{remark},#{api_request},#{api_respond},false,CURRENT_TIMESTAMP())
+</insert>
+    <select id="getMailListByUser" parameterType="com.boot.yuncourier.entity.user.User" resultType="com.boot.yuncourier.entity.service.mail.Mail">
+        select mail.id,mail.state,software.software_name,mail.ip,mail.receive_mail,mail.title,mail.content_type,mail.sender,mail.add_time from mail,software where mail.user_id=#{id} and mail.deleted=false
+        and mail.software_id=software.id
+        <if test="content!=null and content!=''">and (software.software_name like CONCAT('%',#{content},'%') or mail.token like CONCAT('%',#{content},'%') or mail.ip like CONCAT('%',#{content},'%') or mail.receive_mail like CONCAT('%',#{content},'%') or mail.sender like CONCAT('%',#{content},'%') or mail.title like CONCAT('%',#{content},'%') or mail.msg like CONCAT('%',#{content},'%') or mail.remark like CONCAT('%',#{content},'%'))</if>
+        <if test="state!=null and state!=''">and mail.state=#{state}</if>
+        <if test="type!=null and type!=''">and mail.content_type=#{type}</if>
+        <if test="startTime!=null">and mail.add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and mail.add_time&lt;=#{endTime}</if>
+        order by mail.add_time desc
+    </select>
+    <update id="deleteMailByMail" parameterType="com.boot.yuncourier.entity.service.mail.Mail">
+        update mail set deleted=true where user_id=#{user_id} and deleted=false
+        and id=#{id}
+        limit 1
+    </update>
+    <select id="getMailInfoByMail" parameterType="com.boot.yuncourier.entity.service.mail.Mail" resultType="com.boot.yuncourier.entity.service.mail.Mail">
+        select mail.*,software.software_name
+        from mail,software where mail.id=#{id} and mail.user_id=#{user_id}
+        and software.id=mail.software_id
+        and mail.deleted=false limit 1
+    </select>
+    <update id="updateMailInfoByMail" parameterType="com.boot.yuncourier.entity.service.mail.Mail" >
+        update mail
+        <set>
+            <if test="state!=null and state!=''">state=#{state},</if>
+            <if test="sender!=null and sender!=''">sender=#{sender},</if>
+            <if test="send_time!=null">send_time=#{send_time},</if>
+        </set>
+        where user_id=#{user_id} and id=#{id} and deleted=false limit 1
+    </update>
+</mapper>
