@@ -12,15 +12,18 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.jdbc.Driver
     # 填写你数据库的url、登录名、密码和数据库名
-    url: jdbc:mysql://localhost:3306/test?serverTimezone=Asia/Shanghai&amp;useUnicode=true&amp;characterEncoding=utf8&amp;charset=utf8
+    url: jdbc:mysql://127.0.0.1:3306/yuncourier?serverTimezone=Asia/Shanghai&amp;useUnicode=true&amp;characterEncoding=utf8&amp;charset=utf8
+    #url: jdbc:mysql://172.27.0.6:3306/yuncourier?serverTimezone=Asia/Shanghai&characterEncoding=UTF-8
+    #url: jdbc:mysql://172.27.0.6:3306/yuncourier?serverTimezone=Asia/Shanghai&amp;useUnicode=true&amp;characterEncoding=utf8&amp;charset=utf8
     username: root
     password: qq19971102
+    #password: qq19971102SGH!
     druid:
       # 连接池的配置信息
       # 初始化大小，最小，最大
-      initial-size: 5
-      min-idle: 5
-      maxActive: 20
+      initial-size: 10
+      min-idle: 10
+      maxActive: 50
       # 配置获取连接等待超时的时间
       maxWait: 60000
       # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
@@ -61,20 +64,21 @@ spring:
     maxPoolPreparedStatementPerConnectionSize: 20
     useGlobalDataSourceStat: true
     connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
-  redis:
-    database: 0
-    host: 127.0.0.1
-    jedis:
-      pool:
-        max-active: 80
-        max-idle: 50
-        max-wait: 200ms
-        min-idle: 0
-    password: qq19971102
-    port: 6379
-    ssl: false
-    timeout: 2000
-    expired: 300
+#  redis:
+#    database: 0
+#    #host: 127.0.0.1
+#    host: 172.27.0.6
+#    jedis:
+#      pool:
+#        max-active: 80
+#        max-idle: 50
+#        max-wait: 200ms
+#        min-idle: 0
+#    password: qq19971102
+#    port: 6379
+#    ssl: false
+#    timeout: 2000
+#    expired: 300
 
 mybatis:
   mapper-locations: classpath:mapper/**/*.xml

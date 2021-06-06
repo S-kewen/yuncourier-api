@@ -50,8 +50,6 @@ public class UserController {
     @Autowired
     private NewsService newsService;
     @Autowired
-    private RedisUtil redisUtil;
-    @Autowired
     private TencentCloudCaptchaUtil tencentcloudapiService;
     @Autowired
     private TokenUtil tokenUtil;
@@ -109,7 +107,7 @@ public class UserController {
                     token.setRole("user");
                     String tokenStr = tokenUtil.createToken(token);
                     map.put("token", tokenStr);
-                    map.put("ttl", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(new Date().getTime() + ttl)));
+                    map.put("ttl", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(System.currentTimeMillis()+ ttl)));
                 } else if (user.getState() == 2) {
                     loginRecord.setState(3);
                     loginRecordService.addLoginRecordByLoginRecord(loginRecord);
@@ -292,14 +290,6 @@ public class UserController {
                             map.put("tip", "success");
                             map.put("username", token.getUsername());
                             map.put("ttl", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(token.getExpire_time()));
-                            if ("1".equals(redisUtil.get("checkTokenByIp"))) {
-                                if (!util.getMd5(util.getLocalIp(request)).equals(token.getIp())) {
-                                    map.remove("username");
-                                    map.remove("ttl");
-                                    map.put("status", -1);
-                                    map.put("tip", "用戶IP異常，請重新登錄");
-                                }
-                            }
                         } else {
                             map.put("status", -1);
                             map.put("tip", "用戶密碼錯誤");

@@ -6,7 +6,6 @@ import com.boot.yuncourier.annotation.PassToken;
 import com.boot.yuncourier.entity.system.Token;
 import com.boot.yuncourier.entity.user.User;
 import com.boot.yuncourier.util.Util;
-import com.boot.yuncourier.util.RedisUtil;
 import com.boot.yuncourier.util.TokenUtil;
 import com.boot.yuncourier.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +30,6 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     TokenUtil tokenUtil;
     @Autowired
     Util util;
-    @Autowired
-    RedisUtil redisUtil;
     @Autowired
     private HttpServletRequest request;
     @Override
@@ -86,11 +83,6 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                     }
                     if(!token.getPassword().equals(util.getMd5(user.getPassword()))){
                         throw new RuntimeException("用戶密碼錯誤,請重新登錄");//用户狀態異常
-                    }
-                    if("1".equals(redisUtil.get("checkTokenByIp"))){
-                     if(!token.getIp().equals(util.getMd5(util.getLocalIp(request)))){
-                        throw new RuntimeException("用戶IP異常,請重新登錄");//用户狀態異常
-                    }
                     }
                 }
                 // 验证 token

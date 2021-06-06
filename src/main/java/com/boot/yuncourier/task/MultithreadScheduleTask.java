@@ -1,5 +1,7 @@
 package com.boot.yuncourier.task;
 
+import cn.hutool.system.SystemUtil;
+import cn.hutool.system.oshi.OshiUtil;
 import com.boot.yuncourier.entity.system.Performance;
 import com.boot.yuncourier.service.system.PerformanceService;
 import com.boot.yuncourier.util.WindowsInfoUtil;
@@ -26,13 +28,22 @@ public class MultithreadScheduleTask {
     private PerformanceService performanceService;
 
     @Async
-    @Scheduled(fixedDelay = 1000*60*5)
+    @Scheduled(fixedDelay = 1000 * 60 * 5)
     public void addPerformanceByPerformance() {
         Performance performance = new Performance();
-        performance.setCpu(WindowsInfoUtil.getCpu());
-        performance.setRam(WindowsInfoUtil.getRam());
+        performance.setCpu(OshiUtil.getCpuInfo().getCpuNum().floatValue());
+        performance.setRam((float) SystemUtil.getFreeMemory() / SystemUtil.getTotalMemory());
         performanceService.addPerformanceByPerformance(performance);
     }
+
+//    @Async
+//    @Scheduled(fixedDelay = 1000*60*5)
+//    public void addPerformanceByPerformance() {
+//        Performance performance = new Performance();
+//        performance.setCpu(WindowsInfoUtil.getCpu());
+//        performance.setRam(WindowsInfoUtil.getRam());
+//        performanceService.addPerformanceByPerformance(performance);
+//    }
 //    @Async
 //    @Scheduled(fixedDelay = 2000)
 //    public void second() {

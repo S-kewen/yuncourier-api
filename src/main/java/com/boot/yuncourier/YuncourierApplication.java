@@ -26,6 +26,7 @@ public class YuncourierApplication {
     private int port;
     public static void main(String[] args) throws ParseException {
         SpringApplication.run(YuncourierApplication.class, args);
+
         System.out.println("YuncourierApplication-启动完成!!!!");
     }
     /**
