@@ -1,7 +1,6 @@
 # youcourier-api
 ## 快速開始
 demo: https://courier.iskwen.com/
-(測試賬號：test，密碼：test123456)
 
 前端：https://github.com/S-kwen/yuncourier-view
 
