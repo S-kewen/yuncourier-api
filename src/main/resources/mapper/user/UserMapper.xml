@@ -106,7 +106,7 @@
         SELECT
         ifnull( sum( actual_amount ), 0 )
         FROM
-        TRANSACTION
+        transaction
         WHERE
         user_id = #{id}
         AND type = 2
@@ -117,7 +117,7 @@
         SELECT
         ifnull( sum( actual_amount ), 0 )
         FROM
-        TRANSACTION
+        transaction
         WHERE
         user_id = #{id}
         AND type = 2

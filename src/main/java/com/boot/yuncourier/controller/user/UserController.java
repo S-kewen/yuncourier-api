@@ -66,11 +66,11 @@ public class UserController {
     @RequestMapping("userLogin")
     public Map<String, Object> userLogin(String username, String password, String vall, String randstr) throws UnsupportedEncodingException {
         Map<String, Object> map = new HashMap<>();
-        if (!tencentcloudapiService.codeResponse(util.getLocalIp(request), vall, randstr)) {
-            map.put("status", -1);
-            map.put("tip", "驗證碼錯誤");
-            return map;
-        }
+//        if (!tencentcloudapiService.codeResponse(util.getLocalIp(request), vall, randstr)) {
+//            map.put("status", -1);
+//            map.put("tip", "驗證碼錯誤");
+//            return map;
+//        }
         User user = new User();
         user.setUsername(username);
         user = userService.getByUsername(user);
