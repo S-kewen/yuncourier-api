@@ -93,14 +93,14 @@ SELECT
 	SELECT
 		ifnull( sum( actual_amount ), 0 )
 	FROM
-	TRANSACTION
+	transaction
 	WHERE
 		user_id = #{id}
 		AND type = 2
 		AND state = 1
 		AND DATE_FORMAT( add_time, '%Y-%m-%d' ) = DATE_FORMAT( now( ), '%Y-%m-%d' )
 	) AS todayPay,
-	( SELECT ifnull( sum( actual_amount ), 0 ) FROM TRANSACTION WHERE user_id = #{id} AND type = 2 AND state = 1 ) AS allPay,
+	( SELECT ifnull( sum( actual_amount ), 0 ) FROM transaction WHERE user_id = #{id} AND type = 2 AND state = 1 ) AS allPay,
 	(
 		select
 		ifnull(count(*),0)

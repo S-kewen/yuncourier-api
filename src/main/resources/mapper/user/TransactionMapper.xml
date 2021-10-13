@@ -9,7 +9,7 @@
 	SELECT
 		ifnull( sum( actual_amount ), 0 ) AS actual_amount
 	FROM
-	TRANSACTION
+	transaction
 	WHERE
 		user_id = #{id}
 		AND type = 2
@@ -21,7 +21,7 @@
 	SELECT
 		ifnull( sum( actual_amount ), 0 ) AS actual_amount
 	FROM
-	TRANSACTION
+	transaction
 	WHERE
 		user_id = #{id}
 		AND type = 2
@@ -33,7 +33,7 @@
 	SELECT
 		ifnull( sum( actual_amount ), 0 ) AS actual_amount
 	FROM
-	TRANSACTION
+	transaction
 	WHERE
 		user_id = #{id}
 		AND type = 2
@@ -45,7 +45,7 @@
 	SELECT
 		ifnull( sum( actual_amount ), 0 ) AS actual_amount
 	FROM
-	TRANSACTION
+	transaction
 	WHERE
 		user_id = #{id}
 		AND type = 2
@@ -57,7 +57,7 @@
 	SELECT
 		ifnull( sum( actual_amount ), 0 ) AS actual_amount
 	FROM
-	TRANSACTION
+	transaction
 	WHERE
 		user_id = #{id}
 		AND type = 2
@@ -69,7 +69,7 @@
 	SELECT
 		ifnull( sum( actual_amount ), 0 ) AS actual_amount
 	FROM
-	TRANSACTION
+	transaction
 	WHERE
 		user_id = #{id}
 		AND type = 2
@@ -81,7 +81,7 @@
 	SELECT
 		ifnull( sum( actual_amount ), 0 ) AS actual_amount
 	FROM
-	TRANSACTION
+	transaction
 	WHERE
 	user_id = #{id}
 		AND type = 2
