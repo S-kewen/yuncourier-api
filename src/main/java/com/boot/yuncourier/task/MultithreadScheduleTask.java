@@ -31,8 +31,8 @@ public class MultithreadScheduleTask {
     @Scheduled(fixedDelay = 1000 * 60 * 5)
     public void addPerformanceByPerformance() {
         Performance performance = new Performance();
-        performance.setCpu(OshiUtil.getCpuInfo().getCpuNum().floatValue());
-        performance.setRam((float) SystemUtil.getFreeMemory() / SystemUtil.getTotalMemory());
+        performance.setCpu(100F - (float) OshiUtil.getCpuInfo().getFree());
+        performance.setRam((float) SystemUtil.getFreeMemory() / SystemUtil.getTotalMemory() * 100);
         performanceService.addPerformanceByPerformance(performance);
     }
 
