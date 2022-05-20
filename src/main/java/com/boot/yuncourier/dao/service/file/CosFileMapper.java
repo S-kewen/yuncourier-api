@@ -15,12 +15,20 @@ import java.util.List;
 @Mapper
 public interface CosFileMapper {
     int addCosFileByCosFile(CosFile Mail);
+
     List<CosFile> getCosFileListByUser(User user);
+
     int deleteCosFileByCosFile(CosFile cosFile);
+
     CosFile getCosFileInfoByCosFile(CosFile cosFile);
+
     int updateCosFileByCosFile(CosFile cosFile);
+
     CosFile getCosFileInfoByKey(CosFile cosFile);
+
     CosFile getCosFileInfoBySign(CosFile cosFile);
+
     int clearCosFileByCosFile(CosFile cosFile);
+
     int getCosFileCountByCosFile(CosFile cosFile);
 }
